@@ -1,12 +1,17 @@
 const express = require('express')
 const app = express()
 
-let reviews = [
-    { title: "Great Review" },
-    { movie: "Finding Nemo"},
-    { title: "Next Review" },
-    { movie: "Finding Dory"}
-]
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/rotten-potatoes', { useMongoClient: true });
+
+const Review = mongoose.model('Review', {
+  title: String
+});
+
+// let reviews = [
+//     { title: "Great Review" },
+//     { title: "Next Review" }
+// ]
 
 app.listen(3000, () => {
   console.log('App listening on port 3000!')
@@ -23,5 +28,11 @@ app.set('view engine', 'handlebars');
 // })
 
 app.get('/', (req, res) => {
-    res.render('reviews-index', { reviews: reviews });
+  Review.find()
+    .then(reviews => {
+      res.render('reviews-index', { reviews: reviews });
+    })
+    .catch(err => {
+      console.log(err);
+    })
 })
