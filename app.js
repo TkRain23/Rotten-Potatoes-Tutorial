@@ -3,7 +3,9 @@ const app = express()
 
 let reviews = [
     { title: "Great Review" },
-    { title: "Next Review" }
+    { movie: "Finding Nemo"},
+    { title: "Next Review" },
+    { movie: "Finding Dory"}
 ]
 
 app.listen(3000, () => {
