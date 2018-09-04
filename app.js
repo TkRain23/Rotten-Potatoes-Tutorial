@@ -1,5 +1,9 @@
 const express = require('express')
+const methodOverride = require('method-override')
 const app = express()
+
+// override with POST having ?_method=DELETE or ?_method=PUT
+app.use(methodOverride('_method'))
 
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/rotten-potatoes', { useMongoClient: true });
@@ -58,11 +62,28 @@ app.post('/reviews', (req, res) => {
 })
 
 // SHOW
-// SHOW
 app.get('/reviews/:id', (req, res) => {
   Review.findById(req.params.id).then((review) => {
     res.render('reviews-show', { review: review })
   }).catch((err) => {
     console.log(err.message);
   })
+})
+
+// EDIT
+app.get('/reviews/:id/edit', function (req, res) {
+  Review.findById(req.params.id, function(err, review) {
+    res.render('reviews-edit', {review: review});
+  })
+})
+
+// UPDATE
+app.put('/reviews/:id', (req, res) => {
+  Review.findByIdAndUpdate(req.params.id, req.body)
+    .then(review => {
+      res.redirect(`/reviews/${review._id}`)
+    })
+    .catch(err => {
+      console.log(err.message)
+    })
 })
