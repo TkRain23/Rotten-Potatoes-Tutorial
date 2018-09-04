@@ -1,7 +1,10 @@
 <form method="POST" action="/reviews/{{review._id}}?_method=PUT">
-  {{> reviews-form}}
-  <!-- BUTTON -->
-  <p>
-    <button type="submit">Save Review</button>
-  </p>
+    {{> reviews-form}}
+    <!-- BUTTON -->
+    <p>
+        <!-- creates a save button that submits the form -->
+        <button type="submit">Save Review</button>
+        <!-- creates a cancel button next to the save button -->
+        <button type="submit" formaction="..">Cancel</button>
+    </p>
 </form>
