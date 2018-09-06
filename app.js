@@ -97,3 +97,6 @@ app.delete('/reviews/:id', function (req, res) {
     console.log(err.message);
   })
 })
+
+var routes = require('./controllers/reviews');
+routes(app, Review);
