@@ -5,8 +5,11 @@ const app = express()
 // override with POST having ?_method=DELETE or ?_method=PUT
 app.use(methodOverride('_method'))
 
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/rotten-potatoes', { useMongoClient: true });
+var mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/rotten-potatoes');
+
+// const mongoose = require('mongoose');
+// mongoose.connect('mongodb://localhost/rotten-potatoes', { useMongoClient: true });
 
 const Review = mongoose.model('Review', {
   title: String,
@@ -20,10 +23,6 @@ const bodyParser = require('body-parser');
 //     { title: "Great Review" },
 //     { title: "Next Review" }
 // ]
-
-app.listen(3000, () => {
-  console.log('App listening on port 3000!')
-})
 
 // app.js
 var exphbs = require('express-handlebars');
@@ -100,3 +99,7 @@ app.delete('/reviews/:id', function (req, res) {
 
 var routes = require('./controllers/reviews');
 routes(app, Review);
+
+app.listen(3000, () => {
+  console.log('App listening on port 3000!')
+})
