@@ -1,6 +1,8 @@
 const express = require('express')
 const methodOverride = require('method-override')
 const app = express()
+const Comment = require('./models/comment')
+const Review = require('./models/review')
 
 // override with POST having ?_method=DELETE or ?_method=PUT
 app.use(methodOverride('_method'))
@@ -10,13 +12,6 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/rotten-potatoes
 
 // const mongoose = require('mongoose');
 // mongoose.connect('mongodb://localhost/rotten-potatoes', { useMongoClient: true });
-
-const Review = mongoose.model('Review', {
-  title: String,
-  description: String,
-  movieTitle: String,
-  rating: Number
-});
 
 const bodyParser = require('body-parser');
 // let reviews = [
@@ -29,10 +24,6 @@ var exphbs = require('express-handlebars');
 
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
-
-// app.get('/', (req, res) => {
-//   res.render('home', { msg: 'Hello World!' });
-// })
 
 app.use(bodyParser.urlencoded({ extended: true}));
 
@@ -62,12 +53,18 @@ app.post('/reviews', (req, res) => {
 
 // SHOW
 app.get('/reviews/:id', (req, res) => {
-  Review.findById(req.params.id).then((review) => {
-    res.render('reviews-show', { review: review })
+  // find review
+  Review.findById(req.params.id).then(review => {
+    // fetch its comments
+    Comment.find({ reviewId: req.params.id }).then(comments => {
+      // respond with the template with both values
+      res.render('reviews-show', { review: review, comments: comments })
+    })
   }).catch((err) => {
-    console.log(err.message);
-  })
-})
+    // catch errors
+    console.log(err.message)
+  });
+});
 
 // EDIT
 app.get('/reviews/:id/edit', function (req, res) {
@@ -97,8 +94,26 @@ app.delete('/reviews/:id', function (req, res) {
   })
 })
 
+// SHOW
+app.get('/reviews/:id', (req, res) => {
+  // find review
+  Review.findById(req.params.id).then(review => {
+    // fetch its comments
+    Comment.find({ reviewId: req.params.id }).then(comments => {
+      // respond with the template with both values
+      res.render('reviews-show', { review: review, comments: comments })
+    })
+  }).catch((err) => {
+    // catch errors
+    console.log(err.message)
+  });
+});
+
 var routes = require('./controllers/reviews');
 routes(app, Review);
+
+var comments = require('./controllers/comments');
+comments(app);
 
 app.listen(process.env.PORT || 3000, () => {
   console.log('App listening on port 3000!')
